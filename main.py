@@ -77,10 +77,10 @@ def Main_window():
 
     #Choose-Buttons -> activates one of the options
     recordlabel = tk.Label(window, text="record anomyniced Video", font = "Verdana 20 bold")
-    recordlabel.place(relx=0.45, rely=0.4)
+    recordlabel.place(relx=0.4, rely=0.2)
     recordlabel.bind("<Button-1>", lambda e: recordMode(window,anomynicefileslabel,recordlabel))
     anomynicefileslabel = tk.Label(window, text="anomyniced existing Files", font = "Verdana 20 bold")
-    anomynicefileslabel.place(relx=0.45, rely=0.45)
+    anomynicefileslabel.place(relx=0.4, rely=0.3)
     anomynicefileslabel.bind("<Button-1>", lambda e: anomyniceFiles(window,recordlabel,anomynicefileslabel))
 
 #modifies the main window for recording Videos with Webcam
@@ -311,23 +311,36 @@ def wait_for_frames_and_start_OpenCV(video_label):
 
 #modifies main window for loading existing video
 def anomyniceFiles(window,anomynicefileslabel,recordlabel):
-    global FilePathV
+    global FilePathV, ColorOption1, formatOption1
     #delets options from main window
     anomynicefileslabel.place_forget()
     recordlabel.place_forget()
-    #greads inputline for filepath
+    #creads inputline for filepath
     FilePathV = tk.StringVar()
     PathLabel1 = tk.Label(window, text="paste the path to your file witout "" :")
     PathLabel1.place(relx=0.0, rely=0.02)
     Inputpath=tk.Entry(window, textvariable=FilePathV, width=100)
     Inputpath.place(relx=0.15, rely=0.02)
+    #ColorOption menue
+    OptionLabel1 = tk.Label(window, text="save Video in:")
+    OptionLabel1.place(relx=0.55, rely=0.02)
+    ColorOptions1 = ["grayscale", "color"]
+    ColorOption1 = tk.StringVar(window)
+    ColorMenue1 = tk.OptionMenu(window, ColorOption1, *ColorOptions1)
+    ColorMenue1.place(relx=0.6, rely=0.02)
+    ColorOption1.set(ColorOptions1[0])
+    formatOptions1 = [".avi", ".mp4"]
+    formatOption1 = tk.StringVar(window)
+    formatMenue1 = tk.OptionMenu(window, formatOption1, *formatOptions1)
+    formatMenue1.place(relx=0.7, rely=0.02)
+    formatOption1.set(formatOptions1[0])
     #start button
     canvasT2 = tk.Canvas(window, width=50, height=50, highlightthickness=0, bg=None)
-    canvasT2.place(relx=0.6, rely=0.02)
+    canvasT2.place(relx=0.8, rely=0.02)
     triangle2 = canvasT2.create_polygon(50, 25, 0, 50, 0, 0, fill="green", outline="")
     #processing information
     processingLabel=tk.Label(window, text="processing video....", fg = "red", font = "Verdana 40 bold")
-    processingLabel.place(relx=0.4, rely=0.45)
+    processingLabel.place(relx=0.3, rely=0.4)
     processingLabel.place_forget()
     #starts videoprocessing if triangle is pressed
     canvasT2.tag_bind(triangle2, "<Button-1>", lambda e: startVideoanomynication(canvasT2,processingLabel))
@@ -353,24 +366,39 @@ def anomyniceVideo(canvasT2,processingLabel):
     basename = os.path.basename(video_path)
     filename, ext = os.path.splitext(basename) 
 
-    #parameters for saving
-    fourcc = cv2.VideoWriter_fourcc(*'MJPG')
     save_path = os.path.join(os.path.expanduser("~"), "Desktop")
-    VideoName = os.path.join(save_path, f"{filename}_anomyniced.avi")
+
+    # get Color setting
+    Gray = False
+    if ColorOption1.get() == "grayscale":
+        Gray = True
+    
+    AviFormat = False
+    if formatOption1.get() == ".avi" :
+        AviFormat = True
+        #parameters for saving
+        fourcc = cv2.VideoWriter_fourcc(*'MJPG')
+        VideoName = os.path.join(save_path, f"{filename}_anomyniced.avi")
+    else :
+        fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+        VideoName = os.path.join(save_path, f"{filename}_anomyniced.mp4")
 
     frameWidthV = int(Video.get(cv2.CAP_PROP_FRAME_WIDTH))
     frameHeightV = int(Video.get(cv2.CAP_PROP_FRAME_HEIGHT))
     FpsV = Video.get(cv2.CAP_PROP_FPS)
 
-    Out = cv2.VideoWriter(VideoName, fourcc, FpsV, (frameWidthV, frameHeightV), isColor=False)
+    if Gray :
+        Out = cv2.VideoWriter(VideoName, fourcc, FpsV, (frameWidthV, frameHeightV), isColor=False)
+    else:
+        Out = cv2.VideoWriter(VideoName, fourcc, FpsV, (frameWidthV, frameHeightV))
 
     if not Out.isOpened():
         print("VideoWriter konnte nicht geöffnet werden!")
-        canvasT2.place(relx=0.6, rely=0.02)
+        canvasT2.place(relx=0.8, rely=0.02)
         return
 
     #activate processing label
-    processingLabel.place(relx=0.4, rely=0.45)
+    processingLabel.place(relx=0.3, rely=0.4)
 
     while True:
         ret, frame = Video.read()
@@ -378,7 +406,7 @@ def anomyniceVideo(canvasT2,processingLabel):
             break
 
         # YOLO-results
-        results = model(frame, conf=0.1)
+        results = model(frame, conf=0.08)
 
         # blurr human heads
         for r in results:
@@ -388,14 +416,21 @@ def anomyniceVideo(canvasT2,processingLabel):
                 x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
                 frame[y1:y2, x1:x2, :] = cv2.blur(frame[y1:y2, x1:x2, :], (40, 40))
 
-        # convert in gray
-        frame_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        Out.write(frame_gray)
+        if Gray :
+            # convert in gray
+            frame_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            if not AviFormat:
+                frame_gray = cv2.cvtColor(frame_gray, cv2.COLOR_GRAY2BGR)
+            Out.write(frame_gray)
+        else :
+            if len(frame.shape) == 2:
+                frame = cv2.cvtColor(frame, cv2.COLOR_GRAY2BGR)
+            Out.write(frame)
 
     Video.release()
     Out.release()
     processingLabel.place_forget()
-    canvasT2.place(relx=0.6, rely=0.02)
+    canvasT2.place(relx=0.8, rely=0.02)
 
 #starts import load
 threading.Thread(target=LoadImport, daemon=True).start()
