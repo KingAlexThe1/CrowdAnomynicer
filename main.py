@@ -25,7 +25,7 @@ def on_close():
 
 #open main window with loading....
 window = tk.Tk()
-window.title("CrowdAnomanycer User Panel")
+window.title("CrowdAnonymizer")
 window.geometry("1616x909")
 window.configure(bg="white")
 window.iconbitmap(resource_path("icon.ico"))
@@ -37,7 +37,7 @@ Loadinglabel.place(relx=0.45, rely=0.49)
 # Variablen
 running = False
 thread = None
-VideoName = "out-MMDDYYhhmm.mp4"
+VideoName = "out-MMDDYYhhmm.avi"
 model = None
 Videosource1 = None
 Videosource2 = None
@@ -65,7 +65,7 @@ def LoadImport():
 
 #compleats the Main Window with option: record anomyniced Video ; anomyniced existing Files 
 def Main_window():
-    ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("CrowdAnomanycer")
+    ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("CrowdAnonymizer")
 
     Loadinglabel.place_forget()
     # Hintergrundbild
@@ -76,10 +76,10 @@ def Main_window():
     bg_image.place(x=0, y=0, relwidth=1, relheight=1)
 
     #Choose-Buttons -> activates one of the options
-    recordlabel = tk.Label(window, text="record anomyniced Video", font = "Verdana 20 bold")
+    recordlabel = tk.Label(window, text="record anomnymized Video",fg = "green", font = "Verdana 20 bold")
     recordlabel.place(relx=0.4, rely=0.2)
     recordlabel.bind("<Button-1>", lambda e: recordMode(window,anomynicefileslabel,recordlabel))
-    anomynicefileslabel = tk.Label(window, text="anomyniced existing Files", font = "Verdana 20 bold")
+    anomynicefileslabel = tk.Label(window, text="anonymize existing files",fg = "blue", font = "Verdana 20 bold")
     anomynicefileslabel.place(relx=0.4, rely=0.3)
     anomynicefileslabel.bind("<Button-1>", lambda e: anomyniceFiles(window,recordlabel,anomynicefileslabel))
 
@@ -125,7 +125,7 @@ def recordMode(window,anomynicefileslabel,recordlabel):
     canvasT.tag_bind(triangle, "<Button-1>", lambda e: start_button_pressed(canvasT, canvasC, video_label))
     
     # Info-Text
-    Infolabel = tk.Label(window, text="Videoname: out-DDMMYYhhmm.avi      Storage location: Desktop")
+    Infolabel = tk.Label(window, text="Videoname: out-DDMMYYhhmm.avi      Storage location: Pictures/GrowdAnonymizer")
     Infolabel.place(relx=0.0, rely=0.95)
 
 #start choosen webcams and start the processing when webcams are ready
@@ -177,7 +177,9 @@ def recordVideo(video_label):
     now = datetime.datetime.now().strftime("%d%m%y%H%M")
     #parameters for saving the file
     fourcc = cv2.VideoWriter_fourcc(*'MJPG')
-    save_path = os.path.join(os.path.expanduser("~"), "Desktop")
+    user_home = os.path.expanduser("~")
+    save_path = os.path.join(user_home, "Pictures", "GrowdAnonymizer")
+    os.makedirs(save_path, exist_ok=True)
     VideoName = os.path.join(save_path, f"out-{now}.avi")
 
     #calculates framesice for saving the video
@@ -199,7 +201,7 @@ def recordVideo(video_label):
     tSy = frameHeightOut - 5
 
     if not Out.isOpened():
-        print("VideoWriter konnte nicht geöffnet werden!")
+        print("Video can't be saved!")
         running = False
         return
 
@@ -311,30 +313,30 @@ def wait_for_frames_and_start_OpenCV(video_label):
 
 #modifies main window for loading existing video
 def anomyniceFiles(window,anomynicefileslabel,recordlabel):
-    global FilePathV, ColorOption1, formatOption1
+    global FilePathV, ColorOption1, formatOption1, FilePathI, ColorOption2
     #delets options from main window
     anomynicefileslabel.place_forget()
     recordlabel.place_forget()
-    #creads inputline for filepath
+    #creads inputline for videopath
     FilePathV = tk.StringVar()
-    PathLabel1 = tk.Label(window, text="paste the path to your file witout "" :")
+    PathLabel1 = tk.Label(window, text="paste the path to your video :")
     PathLabel1.place(relx=0.0, rely=0.02)
-    Inputpath=tk.Entry(window, textvariable=FilePathV, width=100)
-    Inputpath.place(relx=0.15, rely=0.02)
+    InputpathV=tk.Entry(window, textvariable=FilePathV, width=100)
+    InputpathV.place(relx=0.15, rely=0.02)
     #ColorOption menue
-    OptionLabel1 = tk.Label(window, text="save Video in:")
+    OptionLabel1 = tk.Label(window, text="save video in:")
     OptionLabel1.place(relx=0.55, rely=0.02)
     ColorOptions1 = ["grayscale", "color"]
     ColorOption1 = tk.StringVar(window)
     ColorMenue1 = tk.OptionMenu(window, ColorOption1, *ColorOptions1)
-    ColorMenue1.place(relx=0.6, rely=0.02)
+    ColorMenue1.place(relx=0.65, rely=0.02)
     ColorOption1.set(ColorOptions1[0])
     formatOptions1 = [".avi", ".mp4"]
     formatOption1 = tk.StringVar(window)
     formatMenue1 = tk.OptionMenu(window, formatOption1, *formatOptions1)
     formatMenue1.place(relx=0.7, rely=0.02)
     formatOption1.set(formatOptions1[0])
-    #start button
+    #start button Video
     canvasT2 = tk.Canvas(window, width=50, height=50, highlightthickness=0, bg=None)
     canvasT2.place(relx=0.8, rely=0.02)
     triangle2 = canvasT2.create_polygon(50, 25, 0, 50, 0, 0, fill="green", outline="")
@@ -344,6 +346,26 @@ def anomyniceFiles(window,anomynicefileslabel,recordlabel):
     processingLabel.place_forget()
     #starts videoprocessing if triangle is pressed
     canvasT2.tag_bind(triangle2, "<Button-1>", lambda e: startVideoanomynication(canvasT2,processingLabel))
+    #Input for Images
+    FilePathI = tk.StringVar()
+    PathLabel2 = tk.Label(window, text="paste the path to your image :")
+    PathLabel2.place(relx=0.0, rely=0.15)
+    InputpathI=tk.Entry(window, textvariable=FilePathI, width=100)
+    InputpathI.place(relx=0.15, rely=0.15)
+    #start button Image
+    canvasTI = tk.Canvas(window, width=30, height=30, highlightthickness=0, bg=None)
+    canvasTI.place(relx=0.8, rely=0.15)
+    triangle3 = canvasTI.create_polygon(30, 15, 0, 30, 0, 0, fill="green", outline="")
+    OptionLabel2 = tk.Label(window, text="save image in:")
+    OptionLabel2.place(relx=0.55, rely=0.15)
+    ColorOptions2 = ["grayscale", "color"]
+    ColorOption2 = tk.StringVar(window)
+    ColorMenue2 = tk.OptionMenu(window, ColorOption2, *ColorOptions2)
+    ColorMenue2.place(relx=0.65, rely=0.15)
+    ColorOption2.set(ColorOptions2[0])
+    canvasTI.tag_bind(triangle3, "<Button-1>", lambda e: startImageanomynication(canvasTI))
+    Infolabel = tk.Label(window, text="Storage location: Pictures/GrowdAnonymizer")
+    Infolabel.place(relx=0.0, rely=0.95)
 
 #starts seperate thread for videoprocessing
 def startVideoanomynication(canvasT2,processingLabel):
@@ -351,10 +373,17 @@ def startVideoanomynication(canvasT2,processingLabel):
     #delets start triangle
     canvasT2.place_forget()
 
+#starts seperate thread for Imageprocessing
+def startImageanomynication(canvasTI):
+    threading.Thread(target=anomyniceImage, args=(canvasTI,), daemon=True).start()
+    #delets start triangle
+    canvasTI.place_forget()
+
 #load Video an blurres all human heads
 def anomyniceVideo(canvasT2,processingLabel):
     #get filepath from main Window
-    video_path = FilePathV.get()
+    video_path = FilePathV.get().strip('"')
+
     Video = cv2.VideoCapture(video_path)
 
     if not Video.isOpened():
@@ -366,7 +395,9 @@ def anomyniceVideo(canvasT2,processingLabel):
     basename = os.path.basename(video_path)
     filename, ext = os.path.splitext(basename) 
 
-    save_path = os.path.join(os.path.expanduser("~"), "Desktop")
+    user_home = os.path.expanduser("~")
+    save_path = os.path.join(user_home, "Pictures", "GrowdAnonymizer")
+    os.makedirs(save_path, exist_ok=True)
 
     # get Color setting
     Gray = False
@@ -378,10 +409,10 @@ def anomyniceVideo(canvasT2,processingLabel):
         AviFormat = True
         #parameters for saving
         fourcc = cv2.VideoWriter_fourcc(*'MJPG')
-        VideoName = os.path.join(save_path, f"{filename}_anomyniced.avi")
+        VideoName = os.path.join(save_path, f"{filename}_anonymized.avi")
     else :
         fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-        VideoName = os.path.join(save_path, f"{filename}_anomyniced.mp4")
+        VideoName = os.path.join(save_path, f"{filename}_anonymized.mp4")
 
     frameWidthV = int(Video.get(cv2.CAP_PROP_FRAME_WIDTH))
     frameHeightV = int(Video.get(cv2.CAP_PROP_FRAME_HEIGHT))
@@ -393,7 +424,7 @@ def anomyniceVideo(canvasT2,processingLabel):
         Out = cv2.VideoWriter(VideoName, fourcc, FpsV, (frameWidthV, frameHeightV))
 
     if not Out.isOpened():
-        print("VideoWriter konnte nicht geöffnet werden!")
+        print("Video can't be saved!")
         canvasT2.place(relx=0.8, rely=0.02)
         return
 
@@ -431,6 +462,53 @@ def anomyniceVideo(canvasT2,processingLabel):
     Out.release()
     processingLabel.place_forget()
     canvasT2.place(relx=0.8, rely=0.02)
+
+#load Image an blurres all human heads
+def anomyniceImage(canvasTI):
+    #get filepath from main Window
+    Image_path = FilePathI.get().strip('"')
+
+    Image = None
+    Image = cv2.imread(Image_path)
+
+    if Image is None:
+        print("Image is not found!")
+        canvasTI.place(relx=0.8, rely=0.15)
+        return
+
+    #get filename for saving
+    basename = os.path.basename(Image_path)
+    filename, ext = os.path.splitext(basename) 
+
+    user_home = os.path.expanduser("~")
+    save_path = os.path.join(user_home, "Pictures", "GrowdAnonymizer")
+    os.makedirs(save_path, exist_ok=True)
+    ImageName = os.path.join(save_path, f"{filename}_anonymiced.jpg")
+
+    # get Color setting
+    Gray = False
+    if ColorOption2.get() == "grayscale":
+        Gray = True
+
+     # YOLO-results
+    results = model(Image, conf=0.08)
+
+    # blurr human heads
+    for r in results:
+        boxes = r.boxes
+        for box in boxes:
+            x1, y1, x2, y2 = box.xyxy[0]
+            x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
+            Image[y1:y2, x1:x2, :] = cv2.blur(Image[y1:y2, x1:x2, :], (70, 70))
+
+    if Gray :
+        # convert in gray
+        Image_Out = cv2.cvtColor(Image, cv2.COLOR_BGR2GRAY) 
+        cv2.imwrite(ImageName,Image_Out)
+    else :
+        cv2.imwrite(ImageName,Image)
+
+    canvasTI.place(relx=0.8, rely=0.15)
 
 #starts import load
 threading.Thread(target=LoadImport, daemon=True).start()
