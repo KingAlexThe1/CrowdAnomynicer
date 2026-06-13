@@ -68,7 +68,7 @@ def Main_window():
     ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("CrowdAnonymizer")
 
     Loadinglabel.place_forget()
-    # Hintergrundbild
+    # backgroundimage
     image_path = resource_path("background.png")
     bg_image_file = tk.PhotoImage(file=image_path)
     bg_image = tk.Label(window, image=bg_image_file)
@@ -155,7 +155,7 @@ def stop_button_pressed(canvasC, canvasT, video_label):
 
     stop_loop()
 
-    # Bild wirklich löschen
+    # delete last frame in pre show
     video_label.config(image="", bg=None)
     video_label.image = None
     video_label.place_forget()   
@@ -309,7 +309,7 @@ def wait_for_frames_and_start_OpenCV(video_label):
     thread.start()
     video_label.place(relx=0.05, rely=0.15, width=frameWidthOut, height=frameHeightOut)
 
-#+++++++++++++++load Videos to anomynice++++++++++++++++++++
+#+++++++++++++++load Files to anomynice++++++++++++++++++++
 
 #modifies main window for loading existing video
 def anomyniceFiles(window,anomynicefileslabel,recordlabel):
