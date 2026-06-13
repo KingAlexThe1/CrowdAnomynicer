@@ -1,16 +1,51 @@
-# CrowdAnomynicer
-Realtime Human-head YOLO detection and blurr; Use 1 or 2 webcams. converts video in crayscale and saves as ".avi". Anomynices Humans in crowds; Anomynice existing video. Custom YOLO-Model.
+# CrowdAnonymizer
+A real‑time human‑head detection and anonymization tool using a custom YOLO model. Supports one or two webcams. Converts video to grayscale and saves it as “.avi”. Can anonymize live recordings as well as existing videos and images.
 
-Option 1: recording and real time anomynication:
-This python code opens one ore two cameras, detects and blurrs all Human heads, converts the frames in crayscale and saves the video as ".avi" . The head detections works with YOLO. The custom model is only for this task trained 52000 diffrent pictures for optimal results. The model detecs only Human head, not only faces (one class). The whole head independet of the angle will be blurred. No data will be saved before it is anomyniced. The video will be saved on your Desktop. The Gui works with Tkinter. The video processing with OpenCV. Use multipe cameras to get a whider viewingangle. The programm uses multiple threads but no multiple processes.
+Option 1: Real‑Time Recording and Anonymization
+This Python application opens one or two cameras, detects and blurs all human heads, converts the frames to grayscale, and saves the resulting video as “.avi”.
+Head detection is powered by YOLO. The custom model was trained exclusively for this task using 52,000 diverse images to achieve optimal performance.
+The model detects entire human heads, not just faces (single‑class model). Heads are blurred regardless of viewing angle.
+No data is stored before it has been anonymized.
+Videos are saved in the directory Pictures/CrowdAnonymizer.
+The GUI is built with Tkinter, and video processing is handled by OpenCV.
+Multiple cameras can be used to achieve a wider field of view.
+The program uses multithreading but does not rely on multiprocessing.
 
-Option 2:
-Load existiung file to anomynice. Choose if you whant to change the video in grayscale ore leave it in color. Choose if you whant to save it as .avi or .mp4
+Option 2: Anonymizing Existing Videos or Images
+Load an existing video or image and anonymize it.
+Choose whether the output should be grayscale or remain in color.
+Select whether the video should be saved as .avi or .mp4.
 
-program execution: The programm will open a single Window with "loading". After a second thread is finisched loading all libarys and the YOLO-modell the main Window will load fully. There you can choose between the two Options: "record video", or "load files". after choose one option the main window will change.
-Option1: On the top left you can chooe witch webcam you whant to use. You can use only one ore two at the same time. The frames will be added side by side. In the background will be the background image that shows you what the programm will doo. In the middle is a single green triangle. if clicked. the video will start. The triangle is changed to a read circle to stop the video. The video will be saved on your desktop wih the name: out-DDMMYYhhmm.avi ( out-day Month year minute second) the video will be shown on the main window.
-Option2: on the top left is a input field to paste the path to the video. right to the field are two menus to chosse the color and saving format. on the left is a play button to start the video processing. if cligged the play button will disapear an a new label with " video processing" will aspear. if finsched the label disapears and the playbutton will apear again. the process can be sartet again.
+Program Execution
+When launched, the program first displays a small “Loading” window.
+A secondary thread loads all required libraries and the YOLO model.
+Once loading is complete, the main window appears, offering two options:
+“Record video” or “Load files”.
+After selecting an option, the interface updates accordingly.
+-Option 1 Interface
+Top‑left: Select which webcam(s) to use.
+You may use one or two cameras simultaneously; frames are displayed side by side.
+A background image illustrates the anonymization process.
+A green triangle in the center starts the recording when clicked.
+It changes to a red circle to stop the recording.
+Videos are saved in Pictures/CrowdAnonymizer with the filename format:
+out‑DDMMYYhhmm.avi (day, month, year, hour, minute).
+The recorded video is displayed directly in the main window.
+-Option 2 Interface
+Top‑left: Input field for pasting the video path.
+To the right: Two dropdown menus for selecting color mode and output format.
+A play button starts the processing.
+When clicked, the button disappears and a “Video processing” label appears.
+After completion, the label disappears and the play button returns.
+The process can be repeated as often as needed.
+Below the video path section is a similar interface for loading an image.
+Images can be saved in grayscale or color.
 
-Usecase: Use this app to capture videos of public gaterings without the risk of the identification of single people. One example would be a protection-cam for your demonstation. You will be able to record all acts of violenc but noe one will feel unconfortable because he is filmed. The risk of abusing your recordings will be minimiced. E.g. With the video you can form a public discusion in the case of powerabuse from the police.
+Use Case
+This application is designed for capturing videos of public gatherings without exposing individuals to identification risks.
+For example, it can serve as a protective camera during demonstrations.
+You can document incidents of violence while ensuring that no participant feels uncomfortable being filmed.
+The risk of misuse of your recordings is minimized.
+Such anonymized footage can support public discussions, for instance in cases of police violence ore powerabuse.
 
 greate .exe file: use pyinstaller with: pyinstaller --onedir -w -i icon.ico --add-data "human_head.pt;." --add-data "background.png;." --add-data "icon.ico;." main.py
